@@ -1,0 +1,29 @@
+---
+- hosts: all
+  become: true
+  pre_tasks:
+
+  - name: update repository indx (CentOS)
+    tags: always
+    dnf:
+      update_cache: yes
+    changed_when: false
+    when: ansible_distribution == "CentOS"
+  - name: install updates (Ubuntu)
+    tags: always
+    apt:
+      update_cache: yes
+    changed_when: false
+    when: ansible_distribution == "Ubuntu"
+
+  - name: Start httpd in CentOS
+    tags: apache,centos,httpd,prometheus
+    service:
+      name: httpd
+      state: started
+    when: ansible_distribution == "CentOS"
+
+- hosts: all
+  become: true
+  roles:
+    - prometheus
